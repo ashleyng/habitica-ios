@@ -4639,7 +4639,13 @@ NSString *currentUser;
             return;
         }
         failure:^(RKObjectRequestOperation *operation, NSError *error) {
-            [self handleNetworkError:operation withError:error];
+            if (operation.HTTPRequestOperation.response.statusCode == 401 || operation.HTTPRequestOperation.response.statusCode == 400) {
+                HabiticaAlertController *alertController = [HabiticaAlertController alertWithTitle:NSLocalizedString(@"Error", nil) message:error.localizedDescription];
+                [alertController addCloseActionWithHandler:nil];
+                [alertController show];
+            } else {
+                [self handleNetworkError:operation withError:error];
+            }
             if (errorBlock) {
                 errorBlock();
             }
